@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($path = \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD銷售\\\\0711檔案.html\"; $lines = Get-Content $path -Encoding UTF8; Write-Output \"Total lines: $\\($lines.Count\\)\"; for \\($i=485; $i -le 640; $i++\\) { if \\($lines[$i].Length -gt 300\\) { Write-Output \"$\\($i+1\\): $\\($lines[$i].Length\\) chars\" } })",
+      "PowerShell($path = \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD銷售\\\\0711檔案.html\"; $lines = Get-Content $path -Encoding UTF8; Write-Output \"Total lines: $\\($lines.Count\\)\"; for \\($i=0; $i -lt $lines.Count; $i++\\) { if \\($lines[$i].Length -gt 300\\) { Write-Output \"$\\($i+1\\): $\\($lines[$i].Length\\) chars\" } })",
+      "Read(//c/Users/Wesley/Desktop/OSR BCD�P��/backend/**)",
+      "Read(//c/Users/Wesley/Desktop/OSR BCD�P��/frontend/public/images/**)",
+      "Read(//c/Users/Wesley/Desktop/OSR BCD�P��/frontend/**)",
+      "PowerShell(New-Item -ItemType Directory -Force -Path \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD�P��\\\\frontend\\\\public\\\\images\\\\weight\")",
+      "PowerShell(cd \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD銷售\\\\backend\"; $p = Start-Process node -ArgumentList \"dist/main.js\" -PassThru -RedirectStandardOutput \"boot-out.log\" -RedirectStandardError \"boot-err.log\"; Start-Sleep -Seconds 4; $running = -not $p.HasExited; if \\($running\\) { Stop-Process -Id $p.Id -Force }; \"Still running: $running\"; Get-Content boot-out.log -ErrorAction SilentlyContinue; Get-Content boot-err.log -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process -Id 35916 -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 35916 -Force)",
+      "PowerShell(\"Stopped.\")",
+      "PowerShell(\"---OUT---\")",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Force)",
+      "PowerShell(\"Cleared.\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue)",
+      "Read(//c/Users/Wesley/Desktop/OSR BCD�P��/**)",
+      "PowerShell(Get-Command ngrok -ErrorAction SilentlyContinue)",
+      "PowerShell(ngrok version 2>&1)",
+      "PowerShell(ngrok config add-authtoken 3GTE7Qkbx3br1Dc2uAFAP6zLXea_4vaYPoXdCEmgBsyVBPSym)",
+      "PowerShell(Get-Process ngrok -ErrorAction SilentlyContinue)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://127.0.0.1:4040/api/tunnels\")",
+      "PowerShell(Get-Process -Id 24588,35660 -ErrorAction SilentlyContinue)",
+      "PowerShell(\"Stopped everything.\")",
+      "Read(//c/Users/Wesley/Desktop/OSR BCD�P��/frontend/public/images/wing/**)",
+      "PowerShell(curl.exe -s -X POST http://localhost:3000/api/email-verification/send -H \"Content-Type: application/json\" -d '{\\\\\"email\\\\\":\\\\\"test@example.com\\\\\"}')",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000,5173,5432 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:3000/api/config\" -TimeoutSec 5)",
+      "PowerShell(\"backend responsive\")",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Git\\\\cmd\"; git --version)",
+      "Read(//c/Users/Wesley/Desktop/**)",
+      "PowerShell(Get-Item \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD銷售\\\\postgresql\" | Select-Object FullName, LinkType, Target; \\(Get-ChildItem \"c:\\\\Users\\\\Wesley\\\\Desktop\\\\OSR BCD銷售\\\\postgresql\" -Force -ErrorAction Stop | Measure-Object\\).Count)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\frontend\\public\\images",
+      "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\backend\\src\\database\\migrations"
+    ]
+  }
+}

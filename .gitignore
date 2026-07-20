@@ -1,0 +1,22 @@
+# dependencies / build output
+node_modules/
+dist/
+tsconfig.tsbuildinfo
+
+# secrets - never commit
+.env
+.env.*
+!.env.example
+
+# dev server logs
+*-err.log
+*-out.log
+
+# local Claude Code settings (personal, not shared project config)
+.claude/settings.local.json
+
+# legacy prototype file, not part of the deployed app
+0711檔案.html
+
+# contains R2 credentials - never commit
+R2相關帳密.docx
