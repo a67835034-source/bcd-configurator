@@ -13,7 +13,9 @@ export interface StepOption {
   id: string; // sku_code
   group?: string;
   name: string;
-  priceRMB: number;
+  // Final TWD price, already converted server-side - the RMB cost price is
+  // never sent to the client (see backend/src/modules/products/products.service.ts).
+  priceTwd: number;
   weight: number | null;
   capacity?: number;
   badge?: string;
@@ -35,13 +37,6 @@ export interface Step {
   groups?: StepGroup[];
   specNote?: Record<string, string>;
   options: StepOption[];
-}
-
-// Mirrors backend GET /api/config response
-export interface PricingConfig {
-  exchangeRate: number;
-  markupMultiplier: number;
-  updatedAt: string;
 }
 
 // Mirrors backend POST /api/orders request body (CreateOrderDto)

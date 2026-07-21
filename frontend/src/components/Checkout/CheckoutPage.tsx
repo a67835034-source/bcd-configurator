@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { buildOrderItems, computeTotals, getGiftItems, getOrderLineItems } from '../../store/selectors';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 import { fmt } from '../../lib/pricing';
 import { createOrder, sendEmailVerificationCode, verifyEmailCode, validateDiscountCode, ApiError } from '../../api/client';
 import { DiscountPreview } from '../../types';
@@ -25,15 +24,13 @@ export default function CheckoutPage() {
   const weightCart = useConfiguratorStore((s) => s.weightCart);
   const addonCart = useConfiguratorStore((s) => s.addonCart);
   const tankB = useConfiguratorStore((s) => s.tankB);
-  const pricingConfig = useConfiguratorStore((s) => s.pricingConfig);
   const weightTargetKg = useConfiguratorStore((s) => s.weightTargetKg);
   const liffIdToken = useConfiguratorStore((s) => s.liffIdToken);
   const goToConfigurator = useConfiguratorStore((s) => s.goToConfigurator);
   const goToConfirmation = useConfiguratorStore((s) => s.goToConfirmation);
 
-  const priceTwd = usePriceTwd();
-  const lineItems = getOrderLineItems(steps, selections, weightCart, addonCart, tankB, priceTwd);
-  const { totalTwd: subtotalTwd } = computeTotals(steps, selections, weightCart, addonCart, tankB, pricingConfig);
+  const lineItems = getOrderLineItems(steps, selections, weightCart, addonCart, tankB);
+  const { totalTwd: subtotalTwd } = computeTotals(steps, selections, weightCart, addonCart, tankB);
   const items = buildOrderItems(steps, selections, weightCart, addonCart, tankB);
   const gifts = getGiftItems(steps, selections);
 

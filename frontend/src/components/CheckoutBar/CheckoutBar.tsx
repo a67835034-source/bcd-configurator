@@ -15,11 +15,10 @@ export default function CheckoutBar() {
   const weightCart = useConfiguratorStore((s) => s.weightCart);
   const addonCart = useConfiguratorStore((s) => s.addonCart);
   const tankB = useConfiguratorStore((s) => s.tankB);
-  const pricingConfig = useConfiguratorStore((s) => s.pricingConfig);
   const showAddonModal = useConfiguratorStore((s) => s.showAddonModal);
   const openAddonUpsell = useConfiguratorStore((s) => s.openAddonUpsell);
 
-  const { totalTwd, selectedCount } = computeTotals(steps, selections, weightCart, addonCart, tankB, pricingConfig);
+  const { totalTwd, selectedCount } = computeTotals(steps, selections, weightCart, addonCart, tankB);
 
   return (
     <>

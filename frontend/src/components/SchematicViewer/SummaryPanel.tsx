@@ -1,7 +1,6 @@
 import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { computeTotals } from '../../store/selectors';
 import { fmt } from '../../lib/pricing';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 
 // Ported from the .readout-strip + #specList rendering inside render()
 // (~line 1044-1063).
@@ -11,8 +10,6 @@ export default function SummaryPanel() {
   const weightCart = useConfiguratorStore((s) => s.weightCart);
   const addonCart = useConfiguratorStore((s) => s.addonCart);
   const tankB = useConfiguratorStore((s) => s.tankB);
-  const pricingConfig = useConfiguratorStore((s) => s.pricingConfig);
-  const priceTwd = usePriceTwd();
 
   const { totalTwd, weightKg, selectedCount, missingWeightCount, specs } = computeTotals(
     steps,
@@ -20,7 +17,6 @@ export default function SummaryPanel() {
     weightCart,
     addonCart,
     tankB,
-    pricingConfig,
   );
   // addon is an optional upsell step, not one of the "did you finish every
   // category" steps selectedCount tracks against - excluded from this
@@ -71,7 +67,7 @@ export default function SummaryPanel() {
             <div className="flex-1 text-right">
               <span className="block font-medium">{sp.name}</span>
               <span className="mt-0.5 block font-mono text-xs text-teal">
-                NT${fmt(sp.twdOverride !== undefined ? sp.twdOverride : priceTwd(sp.priceRMB))}
+                NT${fmt(sp.twdOverride !== undefined ? sp.twdOverride : sp.priceTwd)}
               </span>
             </div>
             <div className="w-12 flex-shrink-0 pt-0.5 text-right font-mono text-[11px] text-ink-dim">

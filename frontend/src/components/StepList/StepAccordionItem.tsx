@@ -4,7 +4,6 @@ import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { getSiblingGroupIds, weightCartEntries, weightDisplayName } from '../../store/selectors';
 import { COLOR_CATEGORY_LABELS, COLOR_CATEGORY_ORDER, getColorCategory } from '../../lib/color';
 import { fmt } from '../../lib/pricing';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 import GroupTabs from './GroupTabs';
 import OptionSwatch from '../OptionSwatch/OptionSwatch';
 import WeightOptionSwatch from '../OptionSwatch/WeightOptionSwatch';
@@ -33,8 +32,6 @@ export default function StepAccordionItem({ step, isOpen }: StepAccordionItemPro
   const decWeightQty = useConfiguratorStore((s) => s.decWeightQty);
   const autoFillWeight = useConfiguratorStore((s) => s.autoFillWeight);
 
-  const priceTwd = usePriceTwd();
-
   const isTank = step.id === 'tank';
   const isWeight = step.id === 'weight';
   const optA = step.options.find((o) => o.id === selections[step.id]);
@@ -61,15 +58,15 @@ export default function StepAccordionItem({ step, isOpen }: StepAccordionItemPro
       selectedPrice = 'NT$0';
     } else {
       selectedSummary = entries.map(({ option, qty }) => `${weightDisplayName(option)}×${qty}`).join('＋');
-      const totalTwd = entries.reduce((sum, { option, qty }) => sum + priceTwd(option.priceRMB) * qty, 0);
+      const totalTwd = entries.reduce((sum, { option, qty }) => sum + option.priceTwd * qty, 0);
       selectedPrice = `NT$${fmt(totalTwd)}`;
     }
   } else if (isTank && optA && optB) {
     selectedSummary = optA.id === optB.id ? `${optA.name} ×2` : `${optA.name} + ${optB.name}`;
-    selectedPrice = `NT$${fmt(priceTwd(optA.priceRMB) + priceTwd(optB.priceRMB))}`;
+    selectedPrice = `NT$${fmt(optA.priceTwd + optB.priceTwd)}`;
   } else {
     selectedSummary = optA?.name ?? '尚未選擇';
-    selectedPrice = optA ? `NT$${fmt(priceTwd(optA.priceRMB))}` : 'NT$0';
+    selectedPrice = optA ? `NT$${fmt(optA.priceTwd)}` : 'NT$0';
   }
 
   return (

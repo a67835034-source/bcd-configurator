@@ -6,10 +6,6 @@ import { fmt } from './pricing';
 // the real order number once one exists, instead of being a client-side-only
 // throwaway string.
 //
-// priceTwd converts a spec's priceRMB when the row doesn't already carry a
-// computed twdOverride (weight-cart rows and the "尚未選擇" placeholder set
-// twdOverride directly; every other row needs the live exchange rate).
-//
 // discount, when present, appends the applied coupon + final total after
 // discount (order-confirmation flow); omitted entirely for the pre-checkout
 // share text, which only ever shows the plain subtotal.
@@ -17,7 +13,6 @@ export function buildOrderSummaryText(
   brandName: string,
   orderNo: string,
   totals: Totals,
-  priceTwd: (priceRMB: number) => number,
   discount?: { code: string; amountTwd: number; totalTwd: number },
 ): string {
   const lines = [`【${brandName}｜BCD 客製化規格】`, `訂單編號：${orderNo}`, ''];
@@ -27,7 +22,7 @@ export function buildOrderSummaryText(
       lines.push(`${spec.label}：尚未選擇`);
       continue;
     }
-    const twd = spec.twdOverride !== undefined ? spec.twdOverride : priceTwd(spec.priceRMB);
+    const twd = spec.twdOverride !== undefined ? spec.twdOverride : spec.priceTwd;
     lines.push(`${spec.label}：${spec.name}　NT$${fmt(twd)}`);
   }
 

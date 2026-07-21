@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { addonCartEntries, getAddonStep } from '../../store/selectors';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 import { fmt } from '../../lib/pricing';
 import { colorFor, swatchStyle } from '../../lib/color';
 import { Step, StepOption } from '../../types';
@@ -66,11 +65,10 @@ export default function AddonUpsellModal() {
   const skipAddonsAndCheckout = useConfiguratorStore((s) => s.skipAddonsAndCheckout);
   const confirmAddonsAndCheckout = useConfiguratorStore((s) => s.confirmAddonsAndCheckout);
 
-  const priceTwd = usePriceTwd();
   const addonStep = getAddonStep(steps);
   const entries = addonCartEntries(steps, addonCart);
   const selectedCount = entries.reduce((sum, { qty }) => sum + qty, 0);
-  const subtotalTwd = entries.reduce((sum, { option, qty }) => sum + priceTwd(option.priceRMB) * qty, 0);
+  const subtotalTwd = entries.reduce((sum, { option, qty }) => sum + option.priceTwd * qty, 0);
 
   // Which color SKU is "active" (the one the qty stepper controls) per
   // grouped product - defaults to that group's def option, or its first.
@@ -93,7 +91,6 @@ export default function AddonUpsellModal() {
                 option={row.option}
                 qty={addonCart[row.option.id] ?? 0}
                 note={FLAT_OPTION_NOTES[row.option.id]}
-                priceTwd={priceTwd}
                 onInc={() => incAddonQty(row.option.id)}
                 onDec={() => decAddonQty(row.option.id)}
               />
@@ -105,7 +102,6 @@ export default function AddonUpsellModal() {
                 addonCart={addonCart}
                 activeId={activeByGroup[row.groupId]}
                 onSelect={(optionId) => setActiveByGroup((s) => ({ ...s, [row.groupId]: optionId }))}
-                priceTwd={priceTwd}
                 onInc={incAddonQty}
                 onDec={decAddonQty}
               />
@@ -180,12 +176,11 @@ interface FlatAddonRowProps {
   option: StepOption;
   qty: number;
   note?: string;
-  priceTwd: (priceRMB: number) => number;
   onInc: () => void;
   onDec: () => void;
 }
 
-function FlatAddonRow({ option, qty, note, priceTwd, onInc, onDec }: FlatAddonRowProps) {
+function FlatAddonRow({ option, qty, note, onInc, onDec }: FlatAddonRowProps) {
   return (
     <div
       className={`flex items-center justify-between gap-3 rounded-sm border px-3.5 py-3 ${
@@ -206,7 +201,7 @@ function FlatAddonRow({ option, qty, note, priceTwd, onInc, onDec }: FlatAddonRo
           <div className="truncate text-[13.5px] font-medium text-ink">{option.name}</div>
           {note && <div className="mt-0.5 text-[11px] text-ink-dim">{note}</div>}
           <div className={`mt-0.5 font-mono text-[12px] ${qty > 0 ? 'text-signal' : 'text-teal'}`}>
-            NT${fmt(priceTwd(option.priceRMB))}
+            NT${fmt(option.priceTwd)}
           </div>
         </div>
       </div>
@@ -221,12 +216,11 @@ interface GroupAddonRowProps {
   addonCart: Record<string, number>;
   activeId: string | undefined;
   onSelect: (optionId: string) => void;
-  priceTwd: (priceRMB: number) => number;
   onInc: (optionId: string) => void;
   onDec: (optionId: string) => void;
 }
 
-function GroupAddonRow({ step, groupId, addonCart, activeId, onSelect, priceTwd, onInc, onDec }: GroupAddonRowProps) {
+function GroupAddonRow({ step, groupId, addonCart, activeId, onSelect, onInc, onDec }: GroupAddonRowProps) {
   const groupOptions = step.options.filter((o) => o.group === groupId);
   const groupLabel = step.groups?.find((g) => g.id === groupId)?.label ?? groupId;
   const resolvedActiveId = activeId ?? groupOptions.find((o) => o.def)?.id ?? groupOptions[0]?.id;
@@ -260,7 +254,7 @@ function GroupAddonRow({ step, groupId, addonCart, activeId, onSelect, priceTwd,
           </div>
           {note && <div className="mt-0.5 text-[11px] text-ink-dim">{note}</div>}
           <div className={`mt-0.5 font-mono text-[12px] ${qty > 0 ? 'text-signal' : 'text-teal'}`}>
-            NT${fmt(priceTwd(active.priceRMB))}
+            NT${fmt(active.priceTwd)}
           </div>
         </div>
         <QtyStepper qty={qty} onInc={() => onInc(active.id)} onDec={() => onDec(active.id)} />
@@ -310,7 +304,7 @@ function GroupAddonRow({ step, groupId, addonCart, activeId, onSelect, priceTwd,
                     photo for the whole (non-color) group; these cards are
                     text-only. */}
                 <span className="min-w-0 flex-1 truncate text-[12.5px] text-ink">{opt.name}</span>
-                <span className="flex-shrink-0 font-mono text-[11px] text-ink-dim">NT${fmt(priceTwd(opt.priceRMB))}</span>
+                <span className="flex-shrink-0 font-mono text-[11px] text-ink-dim">NT${fmt(opt.priceTwd)}</span>
                 {optQty > 0 && (
                   <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-signal text-[9px] font-bold text-white">
                     {optQty}

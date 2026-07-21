@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { StepOption } from '../../types';
 import { swatchStyle } from '../../lib/color';
 import { fmt } from '../../lib/pricing';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 import { weightDisplayName } from '../../store/selectors';
 
 interface WeightOptionSwatchProps {
@@ -16,7 +15,6 @@ interface WeightOptionSwatchProps {
 // but with a +/- quantity stepper instead of click-to-select, since the
 // weight pockets step is a cart (multiple SKUs at once) not a single pick.
 export default function WeightOptionSwatch({ option, qty, onInc, onDec }: WeightOptionSwatchProps) {
-  const priceTwd = usePriceTwd();
   // Same photo-with-CSS-fallback pattern as OptionSwatch, just in a smaller
   // box to fit this row layout instead of OptionSwatch's stacked tile.
   const [imageFailed, setImageFailed] = useState(false);
@@ -48,7 +46,7 @@ export default function WeightOptionSwatch({ option, qty, onInc, onDec }: Weight
       <span className="flex flex-col">
         <span className="whitespace-nowrap text-[12.5px] font-medium">{weightDisplayName(option)}</span>
         <span className={`mt-0.5 font-mono text-[11px] ${qty > 0 ? 'text-signal' : 'text-teal'}`}>
-          NT${fmt(priceTwd(option.priceRMB))}
+          NT${fmt(option.priceTwd)}
         </span>
       </span>
       <span className="ml-auto flex flex-shrink-0 items-center gap-1.5 pl-2">

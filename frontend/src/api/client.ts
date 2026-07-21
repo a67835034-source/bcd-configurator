@@ -2,7 +2,6 @@ import {
   CreateOrderPayload,
   DiscountPreview,
   OrderResponse,
-  PricingConfig,
   SendEmailCodePayload,
   Step,
   ValidateDiscountCodePayload,
@@ -35,10 +34,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
 
   return res.json() as Promise<T>;
-}
-
-export function getConfig(): Promise<PricingConfig> {
-  return request<PricingConfig>('/api/config');
 }
 
 export function getProducts(): Promise<Step[]> {

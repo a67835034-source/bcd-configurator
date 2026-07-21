@@ -1,6 +1,5 @@
 import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { computeTotals, getGiftItems, getOrderLineItems } from '../../store/selectors';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 import { fmt } from '../../lib/pricing';
 import { buildLineDirectChatUrl, buildLineShareUrl, openLineUrl } from '../../lib/lineShare';
 import { buildOrderSummaryText } from '../../lib/orderSummary';
@@ -23,14 +22,12 @@ export default function ConfirmationPage() {
   const weightCart = useConfiguratorStore((s) => s.weightCart);
   const addonCart = useConfiguratorStore((s) => s.addonCart);
   const tankB = useConfiguratorStore((s) => s.tankB);
-  const pricingConfig = useConfiguratorStore((s) => s.pricingConfig);
   const lastOrder = useConfiguratorStore((s) => s.lastOrder);
   const lastContact = useConfiguratorStore((s) => s.lastContact);
   const goToConfigurator = useConfiguratorStore((s) => s.goToConfigurator);
 
-  const priceTwd = usePriceTwd();
-  const lineItems = getOrderLineItems(steps, selections, weightCart, addonCart, tankB, priceTwd);
-  const totals = computeTotals(steps, selections, weightCart, addonCart, tankB, pricingConfig);
+  const lineItems = getOrderLineItems(steps, selections, weightCart, addonCart, tankB);
+  const totals = computeTotals(steps, selections, weightCart, addonCart, tankB);
   const gifts = getGiftItems(steps, selections);
 
   if (!lastOrder) {
@@ -45,7 +42,6 @@ export default function ConfirmationPage() {
     BRAND_NAME,
     lastOrder.orderNo,
     totals,
-    priceTwd,
     hasDiscount ? { code: lastOrder.discountCode as string, amountTwd: lastOrder.discountAmountTwd, totalTwd: lastOrder.totalPriceTwd } : undefined,
   );
 

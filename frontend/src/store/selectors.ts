@@ -1,5 +1,4 @@
-import { Step, StepGroup, StepOption, PricingConfig, CreateOrderItemPayload } from '../types';
-import { twd } from '../lib/pricing';
+import { Step, StepGroup, StepOption, CreateOrderItemPayload } from '../types';
 import { WEIGHT_GROUP_META } from '../lib/schematicConstants';
 
 export interface GroupTab {
@@ -100,7 +99,7 @@ export interface SpecRow {
   label: string;
   subLabel?: string; // step's Chinese sub-name, always rendered on its own line below label
   name: string;
-  priceRMB: number;
+  priceTwd: number;
   weight: number | null;
   twdOverride?: number;
   gift?: string; // bundled freebie name, shown as a sub-line under this row
@@ -139,8 +138,6 @@ export interface Totals {
   specs: SpecRow[];
 }
 
-const EMPTY_TOTALS: Totals = { totalTwd: 0, weightKg: 0, selectedCount: 0, missingWeightCount: 0, specs: [] };
-
 // Ported from the totals-accumulation loop inside render() (~line 1005-1043).
 export function computeTotals(
   steps: Step[],
@@ -148,12 +145,7 @@ export function computeTotals(
   weightCart: Record<string, number>,
   addonCart: Record<string, number>,
   tankB: string | null,
-  pricingConfig: PricingConfig | null,
 ): Totals {
-  if (!pricingConfig) return EMPTY_TOTALS;
-  const { exchangeRate, markupMultiplier } = pricingConfig;
-  const priceTwd = (rmb: number) => twd(rmb, exchangeRate, markupMultiplier);
-
   let totalTwd = 0;
   let weightKg = 0;
   let selectedCount = 0;
@@ -170,10 +162,10 @@ export function computeTotals(
       ];
       tankSlots.forEach(([option, tag]) => {
         if (!option) return;
-        totalTwd += priceTwd(option.priceRMB);
+        totalTwd += option.priceTwd;
         if (option.weight === null || option.weight === undefined) missingWeightCount++;
         else weightKg += option.weight;
-        specs.push({ label: `${step.title} ${tag}`, subLabel: step.sub, name: option.name, priceRMB: option.priceRMB, weight: option.weight });
+        specs.push({ label: `${step.title} ${tag}`, subLabel: step.sub, name: option.name, priceTwd: option.priceTwd, weight: option.weight });
       });
       selectedCount++;
       continue;
@@ -182,11 +174,10 @@ export function computeTotals(
     if (step.id === 'weight') {
       const entries = weightCartEntries(steps, weightCart);
       if (entries.length === 0) {
-        specs.push({ label: step.title, subLabel: step.sub, name: '尚未選擇', priceRMB: 0, weight: 0, twdOverride: 0 });
+        specs.push({ label: step.title, subLabel: step.sub, name: '尚未選擇', priceTwd: 0, weight: 0, twdOverride: 0 });
       } else {
         entries.forEach(({ option, qty }) => {
-          const unitTwd = priceTwd(option.priceRMB);
-          const lineTwd = unitTwd * qty;
+          const lineTwd = option.priceTwd * qty;
           const lineWeight = Math.round((option.weight || 0) * qty * 100) / 100;
           totalTwd += lineTwd;
           weightKg += lineWeight;
@@ -194,7 +185,7 @@ export function computeTotals(
             label: step.title,
             subLabel: step.sub,
             name: `${weightDisplayName(option)} ×${qty}`,
-            priceRMB: option.priceRMB,
+            priceTwd: option.priceTwd,
             weight: lineWeight,
             twdOverride: lineTwd,
           });
@@ -210,14 +201,13 @@ export function computeTotals(
       // and no contribution to selectedCount (it's not one of the "did you
       // finish every step" categories).
       addonCartEntries(steps, addonCart).forEach(({ option, qty }) => {
-        const unitTwd = priceTwd(option.priceRMB);
-        const lineTwd = unitTwd * qty;
+        const lineTwd = option.priceTwd * qty;
         totalTwd += lineTwd;
         specs.push({
           label: step.title,
           subLabel: step.sub,
           name: `${option.name} ×${qty}`,
-          priceRMB: option.priceRMB,
+          priceTwd: option.priceTwd,
           weight: null,
           twdOverride: lineTwd,
         });
@@ -227,7 +217,7 @@ export function computeTotals(
 
     const option = step.options.find((o) => o.id === selections[step.id]);
     if (!option) continue;
-    totalTwd += priceTwd(option.priceRMB);
+    totalTwd += option.priceTwd;
     if (option.weight === null || option.weight === undefined) missingWeightCount++;
     else weightKg += option.weight;
     selectedCount++;
@@ -235,7 +225,7 @@ export function computeTotals(
       label: step.title,
       subLabel: step.sub,
       name: option.name,
-      priceRMB: option.priceRMB,
+      priceTwd: option.priceTwd,
       weight: option.weight,
       gift: STEP_GIFTS[step.id],
     });
@@ -245,7 +235,7 @@ export function computeTotals(
   // included with an order, so it's appended once at the end of the list
   // rather than attached to a particular row via STEP_GIFTS.
   if (specs.length > 0) {
-    specs.push({ label: '附贈', name: 'BCD收納袋', priceRMB: 0, weight: null, twdOverride: 0, isGiftRow: true });
+    specs.push({ label: '附贈', name: 'BCD收納袋', priceTwd: 0, weight: null, twdOverride: 0, isGiftRow: true });
     missingWeightCount++;
   }
 
@@ -344,7 +334,6 @@ export function getOrderLineItems(
   weightCart: Record<string, number>,
   addonCart: Record<string, number>,
   tankB: string | null,
-  priceTwd: (priceRMB: number) => number,
 ): OrderLineItem[] {
   const lines: OrderLineItem[] = [];
 
@@ -354,33 +343,30 @@ export function getOrderLineItems(
       const optB = step.options.find((o) => o.id === tankB);
       if (optA && optB) {
         if (optA.id === optB.id) {
-          const unitPriceTwd = priceTwd(optA.priceRMB);
           lines.push({
             option: optA,
             stepLabel: step.title,
             groupLabel: findGroupLabel(step, optA.group),
             quantity: 2,
-            unitPriceTwd,
-            lineTotalTwd: unitPriceTwd * 2,
+            unitPriceTwd: optA.priceTwd,
+            lineTotalTwd: optA.priceTwd * 2,
           });
         } else {
-          const unitA = priceTwd(optA.priceRMB);
-          const unitB = priceTwd(optB.priceRMB);
           lines.push({
             option: optA,
             stepLabel: `${step.title}（第一條）`,
             groupLabel: findGroupLabel(step, optA.group),
             quantity: 1,
-            unitPriceTwd: unitA,
-            lineTotalTwd: unitA,
+            unitPriceTwd: optA.priceTwd,
+            lineTotalTwd: optA.priceTwd,
           });
           lines.push({
             option: optB,
             stepLabel: `${step.title}（第二條）`,
             groupLabel: findGroupLabel(step, optB.group),
             quantity: 1,
-            unitPriceTwd: unitB,
-            lineTotalTwd: unitB,
+            unitPriceTwd: optB.priceTwd,
+            lineTotalTwd: optB.priceTwd,
           });
         }
       }
@@ -389,14 +375,13 @@ export function getOrderLineItems(
 
     if (step.id === 'weight') {
       for (const { option, qty } of weightCartEntries(steps, weightCart)) {
-        const unitPriceTwd = priceTwd(option.priceRMB);
         lines.push({
           option,
           stepLabel: step.title,
           groupLabel: findGroupLabel(step, option.group),
           quantity: qty,
-          unitPriceTwd,
-          lineTotalTwd: unitPriceTwd * qty,
+          unitPriceTwd: option.priceTwd,
+          lineTotalTwd: option.priceTwd * qty,
         });
       }
       continue;
@@ -404,13 +389,12 @@ export function getOrderLineItems(
 
     if (step.id === 'addon') {
       for (const { option, qty } of addonCartEntries(steps, addonCart)) {
-        const unitPriceTwd = priceTwd(option.priceRMB);
         lines.push({
           option,
           stepLabel: step.title,
           quantity: qty,
-          unitPriceTwd,
-          lineTotalTwd: unitPriceTwd * qty,
+          unitPriceTwd: option.priceTwd,
+          lineTotalTwd: option.priceTwd * qty,
         });
       }
       continue;
@@ -418,14 +402,13 @@ export function getOrderLineItems(
 
     const option = step.options.find((o) => o.id === selections[step.id]);
     if (!option) continue;
-    const unitPriceTwd = priceTwd(option.priceRMB);
     lines.push({
       option,
       stepLabel: step.title,
       groupLabel: findGroupLabel(step, option.group),
       quantity: 1,
-      unitPriceTwd,
-      lineTotalTwd: unitPriceTwd,
+      unitPriceTwd: option.priceTwd,
+      lineTotalTwd: option.priceTwd,
     });
   }
 

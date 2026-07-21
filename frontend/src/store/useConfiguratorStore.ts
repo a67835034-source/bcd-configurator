@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { getConfig, getProducts } from '../api/client';
-import { OrderResponse, PricingConfig, Step } from '../types';
+import { getProducts } from '../api/client';
+import { OrderResponse, Step } from '../types';
 import { PART_BEST_VIEW, VIEW_COUNT, WEIGHT_QUICK1_SKU, WEIGHT_QUICK2_SKU } from '../lib/schematicConstants';
 import { getWeightStep } from './selectors';
 
@@ -9,7 +9,6 @@ export type AppView = 'configurator' | 'checkout' | 'confirmation';
 interface ConfiguratorState {
   // catalog (from backend)
   steps: Step[];
-  pricingConfig: PricingConfig | null;
   isLoading: boolean;
   loadError: string | null;
 
@@ -74,7 +73,6 @@ interface ConfiguratorState {
 
 export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   steps: [],
-  pricingConfig: null,
   isLoading: false,
   loadError: null,
 
@@ -102,7 +100,7 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
   async loadCatalog() {
     set({ isLoading: true, loadError: null });
     try {
-      const [steps, pricingConfig] = await Promise.all([getProducts(), getConfig()]);
+      const steps = await getProducts();
 
       // Ported from the legacy initialization block (~line 794-807): pick
       // each step's `def` option (or the first one), seed groupSelections
@@ -123,7 +121,6 @@ export const useConfiguratorStore = create<ConfiguratorState>((set, get) => ({
 
       set({
         steps,
-        pricingConfig,
         selections,
         groupSelections,
         weightCart,

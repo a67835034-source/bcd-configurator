@@ -36,7 +36,8 @@
     ],
     "additionalDirectories": [
       "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\frontend\\public\\images",
-      "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\backend\\src\\database\\migrations"
+      "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\backend\\src\\database\\migrations",
+      "c:\\Users\\Wesley\\Desktop\\OSR BCD�P��\\frontend\\src\\hooks"
     ]
   }
 }

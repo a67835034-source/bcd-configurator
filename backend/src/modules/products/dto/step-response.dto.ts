@@ -14,7 +14,11 @@ export interface OptionResponseDto {
   id: string; // sku_code, e.g. "w18-black"
   group?: string; // parent option_groups.group_code, if any
   name: string;
-  priceRMB: number;
+  // Final, already-converted TWD price (RMB cost * exchange rate * markup,
+  // rounded to charm pricing) - the RMB cost itself is never sent to the
+  // client, so a technically savvy customer can't read it out of this
+  // response the way they previously could from a raw `priceRMB` field.
+  priceTwd: number;
   weight: number | null;
   capacity?: number;
   badge?: string;

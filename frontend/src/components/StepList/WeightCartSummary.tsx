@@ -1,14 +1,12 @@
 import { useConfiguratorStore } from '../../store/useConfiguratorStore';
 import { weightCartCapacityKg, weightCartEntries, weightDisplayName } from '../../store/selectors';
 import { fmt } from '../../lib/pricing';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 
 // Ported from weightCartSummaryHTML() (~line 877-896).
 export default function WeightCartSummary() {
   const steps = useConfiguratorStore((s) => s.steps);
   const weightCart = useConfiguratorStore((s) => s.weightCart);
   const removeWeightItem = useConfiguratorStore((s) => s.removeWeightItem);
-  const priceTwd = usePriceTwd();
 
   const entries = weightCartEntries(steps, weightCart);
 
@@ -22,7 +20,7 @@ export default function WeightCartSummary() {
 
   const totalCapacity = weightCartCapacityKg(entries);
   const totalPairs = entries.reduce((sum, { qty }) => sum + qty, 0);
-  const totalPrice = entries.reduce((sum, { option, qty }) => sum + priceTwd(option.priceRMB) * qty, 0);
+  const totalPrice = entries.reduce((sum, { option, qty }) => sum + option.priceTwd * qty, 0);
 
   return (
     <div className="mt-4 overflow-hidden rounded-sm border border-line">
@@ -38,7 +36,7 @@ export default function WeightCartSummary() {
           </button>
           <span className="flex-1 font-medium">{weightDisplayName(option)}</span>
           <span className="font-mono text-xs text-ink-dim">×{qty}</span>
-          <span className="font-mono text-xs text-teal">NT${fmt(priceTwd(option.priceRMB) * qty)}</span>
+          <span className="font-mono text-xs text-teal">NT${fmt(option.priceTwd * qty)}</span>
         </div>
       ))}
       <div className="flex justify-between gap-2.5 bg-panel-raised px-3.5 py-2.5 font-mono text-xs font-semibold text-ink">

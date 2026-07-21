@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { StepOption } from '../../types';
 import { swatchStyle } from '../../lib/color';
 import { fmt } from '../../lib/pricing';
-import { usePriceTwd } from '../../hooks/usePriceTwd';
 
 interface OptionSwatchProps {
   option: StepOption;
@@ -23,7 +22,6 @@ interface OptionSwatchProps {
 //   chip in the same slot as the plain color circle
 // - neither: CSS color/pattern chip (swatchStyle)
 export default function OptionSwatch({ option, selected, onSelect, fullWidth }: OptionSwatchProps) {
-  const priceTwd = usePriceTwd();
   // If a photo 404s, fall back to the next mode down instead of showing the
   // browser's broken-image icon + alt text.
   const [imageFailed, setImageFailed] = useState(false);
@@ -81,7 +79,7 @@ export default function OptionSwatch({ option, selected, onSelect, fullWidth }: 
           {option.name}
         </span>
         <span className={`mt-0.5 font-mono text-[11px] ${selected ? 'text-signal' : 'text-teal'}`}>
-          NT${fmt(priceTwd(option.priceRMB))}
+          NT${fmt(option.priceTwd)}
         </span>
       </span>
     </div>
