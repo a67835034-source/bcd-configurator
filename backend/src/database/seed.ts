@@ -90,6 +90,7 @@ async function seed(): Promise<void> {
           imageUrl: optionSeed.img ?? null,
           swatchImageUrl: optionSeed.swatchImg ?? null,
           isDefault: Boolean(optionSeed.def),
+          applyMarkup: optionSeed.applyMarkup ?? true,
           displayOrder: index,
         });
       }

@@ -81,6 +81,13 @@ export class ProductOption {
   @Column({ name: 'is_default', type: 'boolean', default: false })
   isDefault!: boolean;
 
+  // Whether MARKUP_MULTIPLIER applies when converting this option's
+  // price_rmb to a TWD price - true for the whole catalog except add-ons
+  // (see seed-data.ts's addon step), which are priced at cost regardless of
+  // the current markup setting.
+  @Column({ name: 'apply_markup', type: 'boolean', default: true })
+  applyMarkup!: boolean;
+
   @Index()
   @Column({ name: 'is_active', type: 'boolean', default: true })
   isActive!: boolean;

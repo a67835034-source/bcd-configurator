@@ -65,7 +65,7 @@ export class CatalogPricingService {
     const pricedItems: PricedItem[] = items.map((item) => {
       const option = optionsBySku.get(item.optionSku) as ProductOption;
       const unitPriceRmb = option.priceRmb;
-      const unitPriceTwd = computeTwdPrice(unitPriceRmb, exchangeRate, markupMultiplier);
+      const unitPriceTwd = computeTwdPrice(unitPriceRmb, exchangeRate, option.applyMarkup ? markupMultiplier : 1);
       return {
         option,
         quantity: item.quantity,

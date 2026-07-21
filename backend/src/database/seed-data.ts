@@ -16,6 +16,10 @@ export interface SeedOption {
   def?: boolean;
   img?: string; // full product photo -> rendered as a large tile (e.g. tank band)
   swatchImg?: string; // cropped fabric/pattern texture -> rendered as a small chip
+  // false = priced at cost, MARKUP_MULTIPLIER not applied - defaults to true
+  // (every option is marked up) when omitted. Used by the add-ons, which are
+  // sold at cost regardless of the main catalog's markup setting.
+  applyMarkup?: boolean;
 }
 
 export interface SeedGroup {
@@ -347,27 +351,30 @@ export const STEP_SEED_DATA: SeedStep[] = [
       // lives in frontend/src/components/CheckoutBar/AddonUpsellModal.tsx
       // (FLAT_OPTION_NOTES) instead.
     },
+    // Every option below is applyMarkup: false - add-ons are sold at cost
+    // (RMB * exchange rate only), not subject to MARKUP_MULTIPLIER like the
+    // rest of the catalog.
     options: [
-      { id: 'addon-dsmb', name: 'DSMB浮力帶', priceRMB: 148, weight: null, img: '/images/addon/addon-dsmb.png' },
+      { id: 'addon-dsmb', name: 'DSMB浮力帶', priceRMB: 148, weight: null, img: '/images/addon/addon-dsmb.png', applyMarkup: false },
       // Test case for photo + color-swatch add-ons (see AddonUpsellModal) -
       // img paths ready for the photos once supplied, matching
       // frontend/public/images/addon/ filenames.
-      { id: 'addon-spool-alu-30m-black', group: 'addon-spool-alu-30m', name: '黑色', priceRMB: 99, weight: null, def: true, img: '/images/addon/addon-spool-alu-30m-black.png' },
-      { id: 'addon-spool-alu-30m-blue', group: 'addon-spool-alu-30m', name: '藍色', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-blue.png' },
-      { id: 'addon-spool-alu-30m-rose', group: 'addon-spool-alu-30m', name: '玫瑰金', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-rose.png' },
-      { id: 'addon-spool-alu-30m-gunmetal', group: 'addon-spool-alu-30m', name: '鐵灰', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-gunmetal.png' },
-      { id: 'addon-spool-alu-30m-red', group: 'addon-spool-alu-30m', name: '紅色', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-red.png' },
-      { id: 'addon-spool-plastic-30m-white', group: 'addon-spool-plastic-30m', name: '白線', priceRMB: 59, weight: null, def: true, img: '/images/addon/addon-spool-plastic-30m-white.png' },
-      { id: 'addon-spool-plastic-30m-orange', group: 'addon-spool-plastic-30m', name: '橘線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-orange.png' },
-      { id: 'addon-spool-plastic-30m-fyellow', group: 'addon-spool-plastic-30m', name: '螢光黃線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-fyellow.png' },
-      { id: 'addon-spool-plastic-30m-pink', group: 'addon-spool-plastic-30m', name: '粉線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-pink.png' },
+      { id: 'addon-spool-alu-30m-black', group: 'addon-spool-alu-30m', name: '黑色', priceRMB: 99, weight: null, def: true, img: '/images/addon/addon-spool-alu-30m-black.png', applyMarkup: false },
+      { id: 'addon-spool-alu-30m-blue', group: 'addon-spool-alu-30m', name: '藍色', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-blue.png', applyMarkup: false },
+      { id: 'addon-spool-alu-30m-rose', group: 'addon-spool-alu-30m', name: '玫瑰金', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-rose.png', applyMarkup: false },
+      { id: 'addon-spool-alu-30m-gunmetal', group: 'addon-spool-alu-30m', name: '鐵灰', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-gunmetal.png', applyMarkup: false },
+      { id: 'addon-spool-alu-30m-red', group: 'addon-spool-alu-30m', name: '紅色', priceRMB: 99, weight: null, img: '/images/addon/addon-spool-alu-30m-red.png', applyMarkup: false },
+      { id: 'addon-spool-plastic-30m-white', group: 'addon-spool-plastic-30m', name: '白線', priceRMB: 59, weight: null, def: true, img: '/images/addon/addon-spool-plastic-30m-white.png', applyMarkup: false },
+      { id: 'addon-spool-plastic-30m-orange', group: 'addon-spool-plastic-30m', name: '橘線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-orange.png', applyMarkup: false },
+      { id: 'addon-spool-plastic-30m-fyellow', group: 'addon-spool-plastic-30m', name: '螢光黃線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-fyellow.png', applyMarkup: false },
+      { id: 'addon-spool-plastic-30m-pink', group: 'addon-spool-plastic-30m', name: '粉線', priceRMB: 59, weight: null, img: '/images/addon/addon-spool-plastic-30m-pink.png', applyMarkup: false },
       // Not a color choice - handled as "text card" variants in
       // AddonUpsellModal rather than color swatches (see isColorVariantGroup()).
       // img only on the def option - used as the group's fixed header photo
       // (same product either way), never shown on the variant cards
       // themselves (see GroupAddonRow's headerImg / non-color-group branch).
-      { id: 'addon-flashlight-with-battery', group: 'addon-flashlight', name: '含電池*4', priceRMB: 320, weight: null, def: true, img: '/images/addon/addon-flashlight-with-battery.png' },
-      { id: 'addon-flashlight-no-battery', group: 'addon-flashlight', name: '不含電池*4', priceRMB: 260, weight: null },
+      { id: 'addon-flashlight-with-battery', group: 'addon-flashlight', name: '含電池*4', priceRMB: 320, weight: null, def: true, img: '/images/addon/addon-flashlight-with-battery.png', applyMarkup: false },
+      { id: 'addon-flashlight-no-battery', group: 'addon-flashlight', name: '不含電池*4', priceRMB: 260, weight: null, applyMarkup: false },
     ],
   },
 ];

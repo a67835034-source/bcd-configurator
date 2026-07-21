@@ -77,7 +77,7 @@ export class ProductsService {
       id: option.skuCode,
       group: option.group?.groupCode,
       name: option.name,
-      priceTwd: computeTwdPrice(option.priceRmb, exchangeRate, markupMultiplier),
+      priceTwd: computeTwdPrice(option.priceRmb, exchangeRate, option.applyMarkup ? markupMultiplier : 1),
       weight: option.weightKg,
       capacity: option.capacityKg ?? undefined,
       badge: option.badgeText ?? undefined,
